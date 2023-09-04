@@ -1,0 +1,4 @@
+from: https://github.com/roytuts/java/tree/master
+Web: https://roytuts.com/create-http-server-in-java-to-serve-static-resources/
+License: unknown
+
