@@ -92,7 +92,7 @@ public class MqttServer implements Runnable {
         module.addDeserializer(AttrRoot.class, new AttrDeserializer());
         MAPPER.registerModule(module);
         try {
-            serverSocket = new ServerSocket(5000);
+            serverSocket = new ServerSocket(0);
             serverSocket.setReuseAddress(true);
             serverSocket.setSoTimeout(3000);
             localPort = serverSocket.getLocalPort();

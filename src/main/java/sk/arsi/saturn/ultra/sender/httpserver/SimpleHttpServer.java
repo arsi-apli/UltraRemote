@@ -49,7 +49,7 @@ public class SimpleHttpServer implements Runnable {
         try {
             executor = Executors.newFixedThreadPool(10);
 
-            httpServer = HttpServer.create(new InetSocketAddress("0.0.0.0", 8080), 0);
+            httpServer = HttpServer.create(new InetSocketAddress("0.0.0.0", 0), 0);
             address = httpServer.getAddress();
             System.out.println("HTTP Server port: " + address);
 
