@@ -15,6 +15,8 @@
  */
 package sk.arsi.saturn.ultra.sender;
 
+import sk.arsi.saturn.ultra.sender.image.Mars4Ultra;
+import sk.arsi.saturn.ultra.sender.image.Saturn3Ultra;
 import sk.arsi.saturn.ultra.sender.pojo.Browse.BrowseRoot;
 
 /**
@@ -43,9 +45,10 @@ public class Printer extends javax.swing.JPanel {
             status.setText("Printing");
         }
         if (root.data.attributes.machineName.contains("Saturn")) {
-            img.setIcon(new javax.swing.ImageIcon(getClass().getResource("/sk/arsi/saturn/ultra/sender/Saturn3Ultra3_180x.png"))); // NOI18N
+
+            img.setIcon(Saturn3Ultra.SATURN_3_ULTRA); // NOI18N
         } else if (root.data.attributes.machineName.contains("Mars")) {
-            img.setIcon(new javax.swing.ImageIcon(getClass().getResource("/sk/arsi/saturn/ultra/sender/Mars4Ultra_120x120.png"))); // NOI18N
+            img.setIcon(Mars4Ultra.MARS_4_ULTRA); // NOI18N
         } else {
             img.setIcon(null);
         }
