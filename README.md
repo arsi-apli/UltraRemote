@@ -13,9 +13,19 @@ java -jar UltraRemote-01.00-shaded.jar full_path_to.goo
 
 Lychee 3D Slicer:
 
-File->Preferences->External tools->User command line:
+File->Preferences
+
+<img src="https://raw.githubusercontent.com/arsi-apli/UltraRemote/master/img/lychee1.png"></a>
+
+
+External tools->User command line:
 
 java -jar full_path_to_UltraRemote-01.00-shaded.jar ((file))
+
+<img src="https://raw.githubusercontent.com/arsi-apli/UltraRemote/master/img/lychee2.png"></a>
+
+
+
 
 <img src="https://raw.githubusercontent.com/arsi-apli/UltraRemote/master/img/browser.png"></a>
 <img src="https://raw.githubusercontent.com/arsi-apli/UltraRemote/master/img/upload.png"></a>
