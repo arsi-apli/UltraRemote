@@ -39,10 +39,18 @@ public class Printer extends javax.swing.JPanel {
         ip.setText(root.data.attributes.mainboardIP);
         firmware.setText(root.data.attributes.firmwareVersion);
         resolution.setText(root.data.attributes.resolution);
-        if (root.data.status.currentStatus == 0) {
-            status.setText("Not printing");
-        } else {
-            status.setText("Printing");
+        switch (root.data.status.currentStatus) {
+            case 0:
+                status.setText("Ready");
+                break;
+            default:
+                if (root.data.status.printInfo.status == 0) {
+                    status.setText("Busy");
+                } else {
+                    status.setText("Printing");
+                }
+                break;
+
         }
         if (root.data.attributes.machineName.contains("Saturn")) {
 

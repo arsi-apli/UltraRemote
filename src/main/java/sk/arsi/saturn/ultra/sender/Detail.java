@@ -69,6 +69,7 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
     private final AtomicReference<LoadHandler> print = new AtomicReference<>();
     private final AtomicReference<LoadHandler> printStage2 = new AtomicReference<>();
     private Timer printTimer;
+    private final int port;
 
     /**
      * Creates new form Detail
@@ -118,7 +119,7 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
         }
         server = new MqttServer();
         server.setListener(this);
-        int port = server.getPort();
+        port = server.getPort();
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.setSoTimeout(2000);
             socket.setReuseAddress(true);
@@ -138,6 +139,7 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 labCom.setText("  Offline  ");
                 labCom.setBackground(Color.red);
+                init.setVisible(true);
             }
         });
         commTimer.setRepeats(true);
@@ -153,7 +155,6 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
         httpServer.refresh();
         httpPort.setText("" + httpServer.getAddress().getPort());
         httpDir.setText(SimpleHttpServer.TMP_DIR);
-
     }
 
     /**
@@ -179,6 +180,7 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
         resolution = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         img = new javax.swing.JLabel();
+        init = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         cFilename = new javax.swing.JLabel();
@@ -194,6 +196,8 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
         jLabel14 = new javax.swing.JLabel();
         error = new javax.swing.JLabel();
         progressTime = new javax.swing.JProgressBar();
+        jLabel19 = new javax.swing.JLabel();
+        remainingTime = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         filename = new javax.swing.JLabel();
@@ -204,6 +208,8 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
         send = new javax.swing.JButton();
         select = new javax.swing.JButton();
         wait = new javax.swing.JLabel();
+        transfer = new javax.swing.JProgressBar();
+        jLabel18 = new javax.swing.JLabel();
         jToolBar1 = new javax.swing.JToolBar();
         labCom = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
@@ -238,6 +244,13 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
 
         jLabel8.setText("Resolution:");
 
+        init.setText("Reinitialise the connection");
+        init.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                initActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -261,43 +274,53 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
                             .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(name)
-                            .addComponent(status)
-                            .addComponent(ip)
-                            .addComponent(firmware)
-                            .addComponent(resolution))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(status)
+                                    .addComponent(resolution))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(init))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(name)
+                                    .addComponent(ip)
+                                    .addComponent(firmware))
+                                .addGap(0, 0, Short.MAX_VALUE)))))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(img)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(model))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(name))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel6)
-                            .addComponent(ip))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel7)
-                            .addComponent(firmware))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel8)
-                            .addComponent(resolution))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(status)))
-                    .addComponent(img))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel1)
+                                    .addComponent(model))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel4)
+                                    .addComponent(name))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel6)
+                                    .addComponent(ip))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel7)
+                                    .addComponent(firmware))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel8)
+                                    .addComponent(resolution))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel5)
+                                    .addComponent(status)))
+                            .addComponent(init, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -327,6 +350,12 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
 
         error.setText(".......");
 
+        jLabel19.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel19.setText("Time remaining:");
+
+        remainingTime.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        remainingTime.setText(".......");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -339,7 +368,8 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
                     .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel14, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(jLabel14, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel19, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(progressLayers, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -350,7 +380,8 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
                             .addComponent(totalLayers)
                             .addComponent(curJob)
                             .addComponent(totJob)
-                            .addComponent(error))
+                            .addComponent(error)
+                            .addComponent(remainingTime))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(progressTime, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -379,6 +410,10 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel12)
                     .addComponent(totJob))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel19)
+                    .addComponent(remainingTime))
                 .addGap(9, 9, 9)
                 .addComponent(progressTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -420,6 +455,8 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
         wait.setText("Waiting for the file transfer to complete");
         wait.setOpaque(true);
 
+        jLabel18.setText("Transfer progress:");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -429,13 +466,18 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel15, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(jLabel15, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel18, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(filename)
-                    .addComponent(filesize)
-                    .addComponent(filemd5))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(transfer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(filename)
+                            .addComponent(filesize)
+                            .addComponent(filemd5))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(173, 173, 173)
                 .addComponent(send)
@@ -459,11 +501,19 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
                     .addComponent(jLabel15)
                     .addComponent(filemd5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(send)
-                    .addComponent(select))
-                .addContainerGap())
-            .addComponent(wait, javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel18)
+                    .addComponent(transfer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(wait))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(send)
+                            .addComponent(select))
+                        .addContainerGap())))
         );
 
         jToolBar1.setFloatable(false);
@@ -601,10 +651,19 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
             select.setEnabled(false);
             send.setEnabled(false);
             print.set(handler);
-            printTimer = new Timer(10000, new ActionListener() {
+            printTimer = new Timer(5000, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    StatusRoot st = server.getStatus();
+                    if (st.data.status.fileTransferInfo.status != 2) {
+                        printTimer.restart();
+                        return;
+                    }
                     printStage2.set(print.getAndSet(null));
+                    server.setPrint(handler);
+                    wait.setVisible(false);
+                    select.setEnabled(true);
+                    send.setEnabled(true);
                 }
             });
             printTimer.setRepeats(false);
@@ -612,6 +671,24 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
         }
         server.setFileLoad(handler);
     }//GEN-LAST:event_sendActionPerformed
+
+    private void initActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_initActionPerformed
+        // TODO add your handling code here:
+        try (DatagramSocket socket = new DatagramSocket()) {
+            socket.setSoTimeout(2000);
+            socket.setReuseAddress(true);
+            String startMqtt = "M66666 " + port;
+
+            DatagramPacket packet = new DatagramPacket(startMqtt.getBytes(), startMqtt.getBytes().length, InetAddress.getByName(root.data.attributes.mainboardIP), 3000);
+            socket.send(packet);
+        } catch (SocketException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_initActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -626,6 +703,7 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
     private javax.swing.JLabel httpDir;
     private javax.swing.JLabel httpPort;
     private javax.swing.JLabel img;
+    private javax.swing.JButton init;
     private javax.swing.JLabel ip;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -636,6 +714,8 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -654,12 +734,14 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
     private javax.swing.JLabel name;
     private javax.swing.JProgressBar progressLayers;
     private javax.swing.JProgressBar progressTime;
+    private javax.swing.JLabel remainingTime;
     private javax.swing.JLabel resolution;
     private javax.swing.JButton select;
     private javax.swing.JButton send;
     private javax.swing.JLabel status;
     private javax.swing.JLabel totJob;
     private javax.swing.JLabel totalLayers;
+    private javax.swing.JProgressBar transfer;
     private javax.swing.JLabel wait;
     // End of variables declaration//GEN-END:variables
 
@@ -676,14 +758,23 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         labCom.setText("  Online  ");
+        init.setVisible(false);
         labCom.setBackground(Color.green);
         commTimer.restart();
         StatusRoot statusRoot = server.getStatus();
         if (statusRoot != null) {
-            if (statusRoot.data.status.currentStatus == 0) {
-                status.setText("Not printing.");
-            } else {
-                status.setText("Printing.");
+            switch (statusRoot.data.status.currentStatus) {
+                case 0:
+                    status.setText("Ready");
+                    break;
+                default:
+                    if (statusRoot.data.status.printInfo.status == 0) {
+                        status.setText("Busy");
+                    } else {
+                        status.setText("Printing");
+                    }
+                    break;
+
             }
             cFilename.setText(statusRoot.data.status.printInfo.filename);
             currentLayer.setText("" + statusRoot.data.status.printInfo.currentLayer);
@@ -694,18 +785,14 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
             progressTime.setValue(statusRoot.data.status.printInfo.currentTicks);
             totJob.setText(TimeUtils.toFormattedString(statusRoot.data.status.printInfo.totalTicks, TimeUnit.MILLISECONDS));
             curJob.setText(TimeUtils.toFormattedString(statusRoot.data.status.printInfo.currentTicks, TimeUnit.MILLISECONDS));
+            remainingTime.setText(TimeUtils.toFormattedString(statusRoot.data.status.printInfo.totalTicks - statusRoot.data.status.printInfo.currentTicks, TimeUnit.MILLISECONDS));
             error.setText("" + statusRoot.data.status.printInfo.errorNumber);
             filename.setText(xfilename);
             filemd5.setText(xchecksum);
             filesize.setText("" + xfilesize);
-            LoadHandler handler = printStage2.getAndSet(null);
-            if (handler != null) {
-                server.setPrint(handler);
-                wait.setVisible(false);
-                select.setEnabled(true);
-                send.setEnabled(true);
-            }
-
+            transfer.setMinimum(0);
+            transfer.setMaximum(statusRoot.data.status.fileTransferInfo.fileTotalSize);
+            transfer.setValue(statusRoot.data.status.fileTransferInfo.downloadOffset);
         }
     }
 }

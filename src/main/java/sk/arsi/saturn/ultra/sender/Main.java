@@ -39,7 +39,7 @@ public class Main {
                 filename = args[0];
             }
         }
-        JFrame frame = new JFrame("UltraRemote v1.0.beta by ArSi");
+        JFrame frame = new JFrame("UltraRemote v1.0.0 by ArSi");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(720, 800);
         frame.setContentPane(new PrinterBrowser(frame, filename));
