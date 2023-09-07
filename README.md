@@ -26,9 +26,16 @@ java -jar full_path_to_UltraRemote-01.00-shaded.jar ((file))
 
 
 
+Printer browser:
 
 <img src="https://raw.githubusercontent.com/arsi-apli/UltraRemote/master/img/browser.png"></a>
+
+File upload:
+
 <img src="https://raw.githubusercontent.com/arsi-apli/UltraRemote/master/img/upload.png"></a>
+
+Printing:
+
 <img src="https://raw.githubusercontent.com/arsi-apli/UltraRemote/master/img/detail.png"></a>
 
 
