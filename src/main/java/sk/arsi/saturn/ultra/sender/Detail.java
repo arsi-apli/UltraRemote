@@ -768,11 +768,7 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
                     status.setText("Ready");
                     break;
                 default:
-                    if (statusRoot.data.status.printInfo.status == 0) {
-                        status.setText("Busy");
-                    } else {
-                        status.setText("Printing");
-                    }
+                    status.setText(getPrintStatusForCode(statusRoot.data.status.printInfo.status));
                     break;
 
             }
@@ -794,5 +790,50 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
             transfer.setMaximum(statusRoot.data.status.fileTransferInfo.fileTotalSize);
             transfer.setValue(statusRoot.data.status.fileTransferInfo.downloadOffset);
         }
+    }
+
+    private String getPrintStatusForCode(int statusCode) {
+        String tmp = "";
+
+        switch (statusCode) {
+            case 0:
+                tmp = "Busy";
+                break;
+            case 1:
+                tmp = "Printing: Preparing";
+                break;
+            case 2:
+                tmp = "Printing: Retracting";
+                break;
+            case 3:
+                tmp = "Printing: Exposing";
+                break;
+            case 4:
+                tmp = "Printing: Lifting";
+                break;
+            case 5:
+                tmp = "Printing: Pausing";
+                break;
+            case 7:
+                tmp = "Printing: Paused";
+                break;
+            case 9:
+                tmp = "Printing: Cancelling";
+                break;
+            case 12:
+                tmp = "Printing: Finalizing";
+                break;
+            case 13:
+                tmp = "Printing: Cancelled";
+                break;
+            case 16:
+                tmp = "Printing: Complete";
+                break;
+            default:
+                tmp = "Unknown";
+                break;
+        }
+
+        return tmp;
     }
 }

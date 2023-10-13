@@ -5,11 +5,15 @@ A command line utility that allows you to view the status of your Elegoo Saturn 
 
 Usage:
 
-java -jar UltraRemote-01.00-shaded.jar 
+> java -jar UltraRemote-01.00-shaded.jar 
 
 or 
 
-java -jar UltraRemote-01.00-shaded.jar full_path_to.goo
+> java -jar UltraRemote-01.00-shaded.jar full_path_to.goo
+
+If you have a problem connecting your printer, try this version:
+
+> java -Djava.net.preferIPv4Stack=true -jar UltraRemote-01.00-shaded.jar full_path_to.goo
 
 Lychee 3D Slicer:
 
