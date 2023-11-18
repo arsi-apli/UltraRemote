@@ -99,6 +99,7 @@ public class MqttServer implements Runnable {
             POOL.execute(this);
         } catch (IOException ex) {
             Logger.getLogger(MqttServer.class.getName()).log(Level.SEVERE, null, ex);
+            javax.swing.JOptionPane.showMessageDialog(null, "I don't detect an incoming printer connection. \nPlease check your firewall settings\n and add UltraRemote to your firewall rules..");
         }
     }
 
