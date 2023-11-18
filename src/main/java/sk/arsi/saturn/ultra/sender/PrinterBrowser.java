@@ -17,14 +17,18 @@ package sk.arsi.saturn.ultra.sender;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.google.common.net.InetAddresses;
 import java.awt.Color;
 import java.awt.Component;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
@@ -50,11 +54,18 @@ public class PrinterBrowser extends javax.swing.JPanel {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private final JFrame frame;
     private final String filename;
+    private final Properties properties;
+
     /**
      * Creates new form PrinterBrowser
      */
     public PrinterBrowser(JFrame frame, String filename) {
         initComponents();
+        properties = new Properties();
+        try {
+            properties.load(new FileReader("ultra.cfg"));
+        } catch (Exception ex) {
+        }
         this.filename = filename;
         SimpleModule module = new SimpleModule();
         module.addDeserializer(StatusRoot.class, new StatusDeserializer());
@@ -100,6 +111,7 @@ public class PrinterBrowser extends javax.swing.JPanel {
         list = new javax.swing.JList<>();
         findPrinter = new javax.swing.JButton();
         select = new javax.swing.JButton();
+        findPrinterIp = new javax.swing.JButton();
 
         jScrollPane1.setViewportView(list);
 
@@ -117,16 +129,24 @@ public class PrinterBrowser extends javax.swing.JPanel {
             }
         });
 
+        findPrinterIp.setText("I know the IP address");
+        findPrinterIp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                findPrinterIpActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 596, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 539, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(findPrinter, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(select, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(select, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(findPrinterIp, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -136,12 +156,18 @@ public class PrinterBrowser extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(findPrinter)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(findPrinterIp)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(select)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void findPrinterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findPrinterActionPerformed
+        findPrinter("255.255.255.255");
+    }//GEN-LAST:event_findPrinterActionPerformed
+
+    public void findPrinter(String ip) {
         try (DatagramSocket socket = new DatagramSocket(3000)) {
             // TODO add your handling code here:
             DefaultListModel<JPanel> model = new DefaultListModel<>();
@@ -152,7 +178,7 @@ public class PrinterBrowser extends javax.swing.JPanel {
             String browse = "M99999";
             DatagramPacket packet = null;
             DatagramPacket reply = null;
-            packet = new DatagramPacket(browse.getBytes(), browse.getBytes().length, InetAddress.getByName("255.255.255.255"), 3000);
+            packet = new DatagramPacket(browse.getBytes(), browse.getBytes().length, InetAddress.getByName(ip), 3000);
             socket.send(packet);
             try {
                 do {
@@ -168,7 +194,7 @@ public class PrinterBrowser extends javax.swing.JPanel {
 
                 } while (true);
             } catch (IOException iOException) {
-              //  Logger.getLogger(PrinterBrowser.class.getName()).log(Level.SEVERE, null, iOException);
+                //  Logger.getLogger(PrinterBrowser.class.getName()).log(Level.SEVERE, null, iOException);
             }
         } catch (SocketException ex) {
             Logger.getLogger(PrinterBrowser.class.getName()).log(Level.SEVERE, null, ex);
@@ -177,17 +203,41 @@ public class PrinterBrowser extends javax.swing.JPanel {
         } catch (IOException ex) {
             Logger.getLogger(PrinterBrowser.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_findPrinterActionPerformed
+    }
 
     private void selectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectActionPerformed
         // TODO add your handling code here:
-        frame.setContentPane(new Detail(((Printer)list.getSelectedValue()).getRoot(),filename));
+        frame.setContentPane(new Detail(((Printer) list.getSelectedValue()).getRoot(), filename, properties));
         frame.revalidate();
         frame.repaint();
     }//GEN-LAST:event_selectActionPerformed
 
+    private void findPrinterIpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findPrinterIpActionPerformed
+        // TODO add your handling code here:
+        String ipTmp = javax.swing.JOptionPane.showInputDialog("IP address:", properties.getProperty("IPaddress", ""));
+        if(ipTmp==null){
+            javax.swing.JOptionPane.showMessageDialog(frame, "The entered text is not a valid IP address");
+            return;
+        }
+        properties.put("IPaddress", ipTmp);
+        try {
+            properties.store(new FileWriter("ultra.cfg"), "");
+        } catch (IOException ex) {
+            Logger.getLogger(PrinterBrowser.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            boolean ok = InetAddresses.isInetAddress(ipTmp);
+
+            if (ok) {
+                findPrinter(ipTmp);
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(frame, "The entered text \"" + ipTmp + "\" is not a valid IP address");
+            }
+
+    }//GEN-LAST:event_findPrinterIpActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton findPrinter;
+    private javax.swing.JButton findPrinterIp;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JList<JPanel> list;
     private javax.swing.JButton select;

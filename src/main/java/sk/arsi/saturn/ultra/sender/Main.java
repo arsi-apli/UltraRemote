@@ -33,13 +33,26 @@ public class Main {
     public static void main(String[] args) {
         // TODO code application logic here
         String filename = null;
-        if (args.length > 0) {
+        if (args.length == 1) {
             File f = new File(args[0]);
             if (f.exists()) {
                 filename = args[0];
             }
+        } else if (args.length > 1) {
+            String tmp = "";
+            for (int i = 0; i < args.length; i++) {
+                String arg = args[i];
+                tmp += arg;
+                if (i < args.length - 1) {
+                    tmp += " ";
+                }
+            }
+            File f = new File(tmp);
+            if (f.exists()) {
+                filename = tmp;
+            }
         }
-        JFrame frame = new JFrame("UltraRemote v1.0.0 by ArSi");
+        JFrame frame = new JFrame("UltraRemote v1.0.2 by ArSi");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(720, 800);
         frame.setContentPane(new PrinterBrowser(frame, filename));

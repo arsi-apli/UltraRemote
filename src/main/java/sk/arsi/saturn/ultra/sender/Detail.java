@@ -19,9 +19,8 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -44,6 +43,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.xml.bind.DatatypeConverter;
 import sk.arsi.saturn.ultra.sender.httpserver.SimpleHttpServer;
 import sk.arsi.saturn.ultra.sender.image.Mars4Ultra;
 import sk.arsi.saturn.ultra.sender.image.Saturn3Ultra;
@@ -76,34 +76,12 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
      *
      * @param root
      */
-    public Detail(BrowseRoot root, String filename) {
+    public Detail(BrowseRoot root, String filename, Properties properties) {
         initComponents();
-        properties = new Properties();
-        try {
-            properties.load(new FileReader("ultra.cfg"));
-        } catch (Exception ex) {
-        }
+        this.properties = properties;
         send.setEnabled(false);
         wait.setVisible(false);
-        try {
-            if (filename != null) {
-                byte[] data = Files.readAllBytes(Paths.get(filename));
-                xfilesize = Files.size(Paths.get(filename));
-                byte[] hash = MessageDigest.getInstance("MD5").digest(data);
-                xchecksum = new BigInteger(1, hash).toString(16);
-                this.xfilename = filename;
-                send.setEnabled(true);
-                System.out.println("*************TMP: " + SimpleHttpServer.TMP_DIR);
-                Path from = Paths.get(this.xfilename); //convert from File to Path
-                Path to = Paths.get(SimpleHttpServer.TMP_DIR + File.separator + new File(xfilename).getName()); //convert from String to Path
-                Files.copy(from, to, StandardCopyOption.REPLACE_EXISTING);
-
-            }
-
-        } catch (IOException iOException) {
-        } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-        }
-
+        processFile(filename);
         this.root = root;
         name.setText(root.data.attributes.name);
         model.setText(root.data.attributes.machineName);
@@ -155,6 +133,25 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
         httpServer.refresh();
         httpPort.setText("" + httpServer.getAddress().getPort());
         httpDir.setText(SimpleHttpServer.TMP_DIR);
+    }
+
+    public void processFile(String filename1) {
+        try {
+            if (filename1 != null) {
+                byte[] data = Files.readAllBytes(Paths.get(filename1));
+                xfilesize = Files.size(Paths.get(filename1));
+                byte[] hash = MessageDigest.getInstance("MD5").digest(data);
+                xchecksum = new BigInteger(1, hash).toString(16);
+                this.xfilename = filename1;
+                send.setEnabled(true);
+                System.out.println("*************TMP: " + SimpleHttpServer.TMP_DIR);
+                Path from = Paths.get(this.xfilename); //convert from File to Path
+                Path to = Paths.get(SimpleHttpServer.TMP_DIR + File.separator + new File(xchecksum + ".goo").getName()); //convert from String to Path
+                Files.copy(from, to, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException iOException) {
+        } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
+        }
     }
 
     /**
@@ -504,16 +501,15 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel18)
                     .addComponent(transfer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(22, 22, 22)
                         .addComponent(wait))
                     .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(send)
-                            .addComponent(select))
-                        .addContainerGap())))
+                            .addComponent(select)))))
         );
 
         jToolBar1.setFloatable(false);
@@ -605,27 +601,7 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
         if (showOpenDialog == JFileChooser.APPROVE_OPTION) {
             File selectedFile = j.getSelectedFile();
             if (selectedFile.exists()) {
-                try {
-                    byte[] data = Files.readAllBytes(Paths.get(selectedFile.getAbsolutePath()));
-                    xfilesize = Files.size(Paths.get(selectedFile.getAbsolutePath()));
-                    byte[] hash = MessageDigest.getInstance("MD5").digest(data);
-                    xchecksum = new BigInteger(1, hash).toString(16);
-                    this.xfilename = selectedFile.getAbsolutePath();
-                    send.setEnabled(true);
-                    properties.setProperty("DIR", selectedFile.getParent());
-                    properties.store(new FileWriter("ultra.cfg"), "");
-                    actionPerformed(null);
-                    if (xfilename != null) {
-                        Path from = Paths.get(xfilename); //convert from File to Path
-                        Path to = Paths.get(SimpleHttpServer.TMP_DIR + File.separator + new File(xfilename).getName()); //convert from String to Path
-                        Files.copy(from, to, StandardCopyOption.REPLACE_EXISTING);
-                        httpServer.refresh();
-                    }
-                } catch (IOException ex) {
-                    Logger.getLogger(Detail.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (NoSuchAlgorithmException ex) {
-                    Logger.getLogger(Detail.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                processFile(selectedFile.getAbsolutePath());
             }
         }
     }//GEN-LAST:event_selectActionPerformed
@@ -638,7 +614,7 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
         handler.set(LoadHandler.Keys.FileSize, filesize.getText());
         handler.set(LoadHandler.Keys.TimeStamp, "" + System.currentTimeMillis());
         String fname = new File(this.filename.getText()).getName();
-        String downloadUrl = "http://${ipaddr}:" + httpServer.getAddress().getPort() + "/" + fname;
+        String downloadUrl = "http://${ipaddr}:" + httpServer.getAddress().getPort() + "/" + xchecksum + ".goo";
         // String downloadUrl = "http://${ipaddr}:" + 80 + "/" + fname;
         handler.set(LoadHandler.Keys.Filename, fname);
         handler.set(LoadHandler.Keys.URL, downloadUrl);
@@ -835,5 +811,20 @@ public class Detail extends javax.swing.JPanel implements ActionListener {
         }
 
         return tmp;
+    }
+
+    private String md5Hash(String fileName){
+        String myChecksum = "5EB63BBBE01EEED093CB22BB8F5ACDC3";
+
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(fileName.getBytes("UTF-8"));
+            byte[] digest = md.digest();
+             myChecksum = DatatypeConverter
+                    .printHexBinary(digest).toUpperCase();
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
+             Logger.getLogger(Detail.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return myChecksum+".goo";
     }
 }
