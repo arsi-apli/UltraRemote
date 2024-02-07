@@ -15,9 +15,15 @@
  */
 package sk.arsi.saturn.ultra.sender.pojo.Status;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Status {
+    @SerializedName("CurrentStatus")
     public int currentStatus;
+    @SerializedName("PreviousStatus")
     public int previousStatus;
+    @SerializedName("PrintInfo")
     public PrintInfo printInfo;
+    @SerializedName("FileTransferInfo")
     public FileTransferInfo fileTransferInfo;
 }

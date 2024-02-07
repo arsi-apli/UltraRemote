@@ -17,6 +17,8 @@ package sk.arsi.saturn.ultra.sender.mqtt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.google.gson.Gson;
+
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.InputStream;
@@ -251,19 +253,20 @@ public class MqttServer implements Runnable {
     }
 
     private void decodeMessage(String topic, String msg) {
+        Gson gson = new Gson();
         if (topic.startsWith("/sdcp/status/")) {
             try {
-                StatusRoot readValue = MAPPER.readValue(msg, StatusRoot.class);
+                StatusRoot readValue = gson.fromJson(msg, StatusRoot.class);
                 status.set(readValue);
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 Logger.getLogger(MqttServer.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         } else if (topic.startsWith("/sdcp/attributes/")) {
             try {
-                AttrRoot readValue = MAPPER.readValue(msg, AttrRoot.class);
+                AttrRoot readValue = gson.fromJson(msg, AttrRoot.class);
                 attributes.set(readValue);
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 Logger.getLogger(MqttServer.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

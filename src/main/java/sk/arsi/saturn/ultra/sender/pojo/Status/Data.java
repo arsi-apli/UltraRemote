@@ -15,8 +15,13 @@
  */
 package sk.arsi.saturn.ultra.sender.pojo.Status;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Data {
+    @SerializedName("Status")
     public Status status;
+    @SerializedName("MainboardID")
     public String mainboardID;
+    @SerializedName("TimeStamp")
     public int timeStamp;
 }

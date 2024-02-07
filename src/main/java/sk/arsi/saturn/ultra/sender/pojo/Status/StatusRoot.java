@@ -15,7 +15,11 @@
  */
 package sk.arsi.saturn.ultra.sender.pojo.Status;
 
+import com.google.gson.annotations.SerializedName;
+
 public class StatusRoot {
+    @SerializedName("Id")
     public String id;
+    @SerializedName("Data")
     public Data data;
 }

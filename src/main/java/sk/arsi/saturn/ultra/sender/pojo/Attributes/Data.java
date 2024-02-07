@@ -15,8 +15,13 @@
  */
 package sk.arsi.saturn.ultra.sender.pojo.Attributes;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Data {
+    @JsonProperty("Attributes")
     public Attributes attributes;
+    @JsonProperty("MainboardID")
     public String mainboardID;
+    @JsonProperty("TimeStamp")
     public int timeStamp;
 }
