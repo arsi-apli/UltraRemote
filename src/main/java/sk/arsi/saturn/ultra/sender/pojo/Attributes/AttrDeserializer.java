@@ -46,7 +46,8 @@ public class AttrDeserializer extends StdDeserializer<AttrRoot> {
         root.data.mainboardID = node.get("MainboardID").asText();
         root.data.timeStamp = node.get("TimeStamp").asInt();
         root.data.attributes = new Attributes();
-        JsonNode attrs = node.get("Status");
+		JsonNode attrs = node.get("Attributes");
+        if (attrs == null) attrs = node.get("Status");
 		if (attrs != null)
 		{
 			root.data.attributes.currentStatus = attrs.get("CurrentStatus").asInt();
