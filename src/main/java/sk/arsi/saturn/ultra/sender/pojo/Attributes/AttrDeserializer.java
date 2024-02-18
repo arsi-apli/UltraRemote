@@ -46,25 +46,29 @@ public class AttrDeserializer extends StdDeserializer<AttrRoot> {
         root.data.mainboardID = node.get("MainboardID").asText();
         root.data.timeStamp = node.get("TimeStamp").asInt();
         root.data.attributes = new Attributes();
-        JsonNode attrs = node.get("Attributes");
-        root.data.attributes.currentStatus = attrs.get("CurrentStatus").asInt();
-        root.data.attributes.previousStatus = attrs.get("PreviousStatus").asInt();
-        root.data.attributes.fileTransferInfo = new FileTransferInfo();
-        JsonNode n = attrs.get("FileTransferInfo");
-        root.data.attributes.fileTransferInfo.checkOffset = n.get("CheckOffset").asInt();
-        root.data.attributes.fileTransferInfo.downloadOffset = n.get("DownloadOffset").asInt();
-        root.data.attributes.fileTransferInfo.fileTotalSize = n.get("FileTotalSize").asInt();
-        root.data.attributes.fileTransferInfo.status = n.get("Status").asInt();
-        root.data.attributes.fileTransferInfo.filename = n.get("Filename").asText();
-        n = attrs.get("PrintInfo");
-        root.data.attributes.printInfo = new PrintInfo();
-        root.data.attributes.printInfo.currentLayer = n.get("CurrentLayer").asInt();
-        root.data.attributes.printInfo.currentTicks = n.get("CurrentTicks").asInt();
-        root.data.attributes.printInfo.errorNumber = n.get("ErrorNumber").asInt();
-        root.data.attributes.printInfo.status = n.get("Status").asInt();
-        root.data.attributes.printInfo.totalLayer = n.get("TotalLayer").asInt();
-        root.data.attributes.printInfo.totalTicks = n.get("TotalTicks").asInt();
-        root.data.attributes.printInfo.filename = n.get("Filename").asText();
+		JsonNode attrs = node.get("Attributes");
+        if (attrs == null) attrs = node.get("Status");
+		if (attrs != null)
+		{
+			root.data.attributes.currentStatus = attrs.get("CurrentStatus").asInt();
+			root.data.attributes.previousStatus = attrs.get("PreviousStatus").asInt();
+			root.data.attributes.fileTransferInfo = new FileTransferInfo();
+			JsonNode n = attrs.get("FileTransferInfo");
+			root.data.attributes.fileTransferInfo.checkOffset = n.get("CheckOffset").asInt();
+			root.data.attributes.fileTransferInfo.downloadOffset = n.get("DownloadOffset").asInt();
+			root.data.attributes.fileTransferInfo.fileTotalSize = n.get("FileTotalSize").asInt();
+			root.data.attributes.fileTransferInfo.status = n.get("Status").asInt();
+			root.data.attributes.fileTransferInfo.filename = n.get("Filename").asText();
+			n = attrs.get("PrintInfo");
+			root.data.attributes.printInfo = new PrintInfo();
+			root.data.attributes.printInfo.currentLayer = n.get("CurrentLayer").asInt();
+			root.data.attributes.printInfo.currentTicks = n.get("CurrentTicks").asInt();
+			root.data.attributes.printInfo.errorNumber = n.get("ErrorNumber").asInt();
+			root.data.attributes.printInfo.status = n.get("Status").asInt();
+			root.data.attributes.printInfo.totalLayer = n.get("TotalLayer").asInt();
+			root.data.attributes.printInfo.totalTicks = n.get("TotalTicks").asInt();
+			root.data.attributes.printInfo.filename = n.get("Filename").asText();
+		}
         return root;
     }
 
